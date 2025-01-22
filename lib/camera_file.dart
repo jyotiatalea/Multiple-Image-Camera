@@ -70,7 +70,7 @@ class _CameraFileState extends State<CameraFile> with TickerProviderStateMixin {
 
   Future<void> _initCamera() async {
     _cameras = await availableCameras();
-    // ignore: unnecessary_null_comparison
+    // ignore: unnecessary_null_comparison_buildCameraPreview
     if (_cameras != null) {
       _controller = CameraController(_cameras[0], ResolutionPreset.ultraHigh,
           enableAudio: false);
@@ -105,89 +105,54 @@ class _CameraFileState extends State<CameraFile> with TickerProviderStateMixin {
             height: double.infinity,
             child: Stack(fit: StackFit.expand, children: [
               CameraPreview(_controller!),
-              ListView.builder(
-                padding: const EdgeInsets.only(bottom: 100),
-                shrinkWrap: true,
-                itemCount: imageFiles.length,
-                itemBuilder: ((context, index) {
-                  return Row(
-                    children: <Widget>[
-                      Container(
-                        alignment: Alignment.bottomLeft,
-                        // ignore: unnecessary_null_comparison
-                        child: imageFiles[index] == null
-                            ? const Text("No image captured")
-                            : imageFiles.length - 1 == index
-                                ? ScaleTransition(
-                                    scale: scaleAnimation,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder:
-                                                    (BuildContext context) =>
-                                                        ImagePreviewView(
-                                                          File(imageFiles[index]
-                                                              .path),
-                                                          "",
-                                                        )));
-                                      },
-                                      child: Stack(
-                                        children: [
-                                          Image.file(
-                                            File(
-                                              imageFiles[index].path,
-                                            ),
-                                            height: 90,
-                                            width: 60,
-                                          ),
-                                          Positioned(
-                                            top: 0,
-                                            right: 0,
-                                            child: GestureDetector(
-                                              onTap: () {
-                                                setState(() {
-                                                  removeImage();
-                                                });
-                                              },
-                                              child: Image.network(
-                                                "https://logowik.com/content/uploads/images/close1437.jpg",
-                                                height: 30,
-                                                width: 30,
-                                              ),
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  )
-                                : GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (BuildContext context) =>
-                                                  ImagePreviewView(
-                                                    File(
-                                                        imageFiles[index].path),
-                                                    "",
-                                                  )));
-                                    },
-                                    child: Image.file(
-                                      File(
-                                        imageFiles[index].path,
-                                      ),
-                                      height: 90,
-                                      width: 60,
-                                    ),
-                                  ),
-                      )
-                    ],
-                  );
-                }),
-                scrollDirection: Axis.horizontal,
-              ),
+             imageFiles.isNotEmpty
+    ? Positioned(
+        bottom: 100,
+        left: 0,
+        child: ScaleTransition(
+          scale: scaleAnimation,
+          child: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => ImagePreviewView(
+                            File(imageFiles.last.path),
+                            "",
+                          )));
+            },
+            child: Stack(
+              children: [
+                Image.file(
+                  File(
+                    imageFiles.last.path,
+                  ),
+                  height: 90,
+                  width: 60,
+                ),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        removeImage();
+                      });
+                    },
+                    child: Image.network(
+                      "https://logowik.com/content/uploads/images/close1437.jpg",
+                      height: 30,
+                      width: 30,
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+      )
+    : const SizedBox(),
+
               Positioned(
                 right:
                     MediaQuery.of(context).orientation == Orientation.portrait
