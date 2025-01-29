@@ -20,6 +20,7 @@ class _CameraFileState extends State<CameraFile> with TickerProviderStateMixin {
   late List<CameraDescription> _cameras;
   CameraController? _controller;
   List<XFile> imageFiles = [];
+  List<XFile> thumbnailimage = [];
   List<MediaModel> imageList = <MediaModel>[];
   late int _currIndex;
   late Animation<double> animation;
@@ -30,6 +31,9 @@ class _CameraFileState extends State<CameraFile> with TickerProviderStateMixin {
   addImages(XFile image) {
     setState(() {
       imageFiles.add(image);
+       thumbnailimage.clear();
+   thumbnailimage.insert(0, image);
+   print('thumbnailimage.length ${thumbnailimage.length}');
       _animationController = AnimationController(
           vsync: this, duration: const Duration(milliseconds: 1500));
       animation = Tween<double>(begin: 400, end: 1).animate(scaleAnimation =
@@ -108,16 +112,16 @@ class _CameraFileState extends State<CameraFile> with TickerProviderStateMixin {
               ListView.builder(
                 padding: const EdgeInsets.only(bottom: 100),
                 shrinkWrap: true,
-                itemCount: imageFiles.length,
+                itemCount: thumbnailimage.length,
                 itemBuilder: ((context, index) {
                   return Row(
                     children: <Widget>[
                       Container(
                         alignment: Alignment.bottomLeft,
                         // ignore: unnecessary_null_comparison
-                        child: imageFiles[index] == null
+                        child: thumbnailimage[index] == null
                             ? const Text("No image captured")
-                            : imageFiles.length - 1 == index
+                            : thumbnailimage.length - 1 == index
                                 ? ScaleTransition(
                                     scale: scaleAnimation,
                                     child: GestureDetector(
@@ -128,7 +132,7 @@ class _CameraFileState extends State<CameraFile> with TickerProviderStateMixin {
                                                 builder:
                                                     (BuildContext context) =>
                                                         ImagePreviewView(
-                                                          File(imageFiles[index]
+                                                          File(thumbnailimage[index]
                                                               .path),
                                                           "",
                                                         )));
@@ -137,7 +141,7 @@ class _CameraFileState extends State<CameraFile> with TickerProviderStateMixin {
                                         children: [
                                           Image.file(
                                             File(
-                                              imageFiles[index].path,
+                                              thumbnailimage[0].path,
                                             ),
                                             height: 90,
                                             width: 60,
@@ -170,13 +174,13 @@ class _CameraFileState extends State<CameraFile> with TickerProviderStateMixin {
                                               builder: (BuildContext context) =>
                                                   ImagePreviewView(
                                                     File(
-                                                        imageFiles[index].path),
+                                                        thumbnailimage[index].path),
                                                     "",
                                                   )));
                                     },
                                     child: Image.file(
                                       File(
-                                        imageFiles[index].path,
+                                        thumbnailimage[index].path,
                                       ),
                                       height: 90,
                                       width: 60,
